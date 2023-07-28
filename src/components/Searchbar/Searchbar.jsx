@@ -17,7 +17,6 @@ export class Searchbar extends Component {
     }
 
     render() {
-        const {handleSearchQuery} = this.props
         return (
             <header className={css.searchbar}>
                 <form className={css.search_form} onSubmit={this.getSeachQuery}>
