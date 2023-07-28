@@ -87,22 +87,22 @@ export class App extends Component {
       })
   }
 
-  getOkStatus = () => {
-    this.setState(({isFinded: true}))
-  }
-
   render() {
     return (
       <div className={css.app}>
-        {!this.state.isFinded && <ErrorMessage getOkStatus={ this.getOkStatus } />}
+        {!this.state.isFinded && <ErrorMessage />}
         <Searchbar handleSearchQuery={this.handleSearchQuery} />
-        {this.state.isLoading && <Loader/>}
-        <ImageGallery
-          collection={this.state.collection}
-          openLargeImage={this.openLargeImage}
-        >
-          {!this.state.isFinish && <Button loadMore={this.loadMore} />} 
-        </ImageGallery>
+        {this.state.isLoading && <Loader />}
+        
+        {this.state.collection.length > 0 &&
+          <ImageGallery
+            collection={this.state.collection}
+            openLargeImage={this.openLargeImage}
+          >
+            {!this.state.isFinish && <Button loadMore={this.loadMore} />} 
+          </ImageGallery>
+        }
+        
         {this.state.isLoadingMore && <Loader/>}
         {this.state.isLargeImage &&
           <Modal

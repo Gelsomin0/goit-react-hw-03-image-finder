@@ -1,5 +1,6 @@
 import { Component } from "react";
 import css from './Modal.module.css';
+import PropTypes from 'prop-types';
 
 export class Modal extends Component {
     componentDidMount() {
@@ -29,4 +30,9 @@ export class Modal extends Component {
             </div>
         );
     }
+}
+
+Modal.propTypes = {
+    closeModal: PropTypes.func.isRequired,
+    largeImageUrl: PropTypes.string.isRequired,
 }

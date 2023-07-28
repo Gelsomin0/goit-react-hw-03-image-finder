@@ -38,6 +38,8 @@
     ]
   },
   "devDependencies": {
+    "prop-types": "^15.8.1",
+    "proptypes": "^1.1.0",
     "react-icons": "^4.10.1",
     "react-loader-spinner": "^5.3.4"
   }

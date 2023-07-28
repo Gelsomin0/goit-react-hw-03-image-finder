@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { ImageGalleryItem } from "components/ImageGalleryItem/ImageGalleryItem";
 import css from './ImageGallery.module.css';
+import PropTypes from 'prop-types';
 
 export class ImageGallery extends Component {
     render() {
@@ -22,4 +23,10 @@ export class ImageGallery extends Component {
             
         );
     }
+}
+
+ImageGallery.propTypes = {
+    collection: PropTypes.array.isRequired,
+    openLargeImage: PropTypes.func.isRequired,
+    children: PropTypes.element.isRequired,
 }
