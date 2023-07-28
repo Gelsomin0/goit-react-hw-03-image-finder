@@ -4,7 +4,10 @@ import css from './Button.module.css';
 export class Button extends Component {
     render() {
         return (
-            <button className={css.button}>Load more</button>
+            <button
+                className={css.button}
+                onClick={this.props.loadMore}
+            >Load more</button>
         );
     }
 }

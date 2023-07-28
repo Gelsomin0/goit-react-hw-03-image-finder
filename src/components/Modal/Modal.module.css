@@ -12,6 +12,16 @@
 }
 
 .modal {
-    max-width: calc(100% - 48px);
-    max-height: calc(100% - 24px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 48px);
+    height: calc(100% - 24px);
+    padding: 30px;
+}
+
+.modal_image {
+    width: calc(100vw - 50px);
+    height: calc(100vh - 30px);
+    object-fit: cover;
 }
