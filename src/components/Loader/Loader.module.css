@@ -1,11 +1,11 @@
 .loader {
     display: block;
     position: fixed;
+    top: 50%;
     left: 50%;
-    bottom: 5px;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     background: radial-gradient(circle at center, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0));
     backdrop-filter: blur(1px);
-    padding: 50px;
+    padding: 70px;
     border-radius: 50%;
 }

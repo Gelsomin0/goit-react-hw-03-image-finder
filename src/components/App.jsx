@@ -6,6 +6,7 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
 import { Loader } from './Loader/Loader';
+import { ErrorMessage } from './ErrorMessage/ErrorMessage';
 
 export class App extends Component {
   state = {
@@ -16,6 +17,7 @@ export class App extends Component {
     isLoadingMore: false,
     isLargeImage: false,
     isFinish: true,
+    isFinded: true,
     largeImageUrl: '',
   }
 
@@ -24,11 +26,19 @@ export class App extends Component {
       page: 1,
       searchQuery: searchText,
       isLoading: true,
+      isFinish: true,
       collection: [],
     }));
     getSearchData(this.state.searchQuery, this.state.page)
       .then(res => res.json())
       .then(res => {
+        if (res.total === 0) {
+          this.setState(({
+            isLoading: false,
+            isFinded: false,
+          }));
+          return res.total;
+        }
         this.setState(() => {
           if (res.hits.length !== 12) {
             this.setState(({isFinish: true}))
@@ -74,9 +84,14 @@ export class App extends Component {
       })
   }
 
+  getOkStatus = () => {
+    this.setState(({isFinded: true}))
+  }
+
   render() {
     return (
       <div className={css.app}>
+        {!this.state.isFinded && <ErrorMessage getOkStatus={ this.getOkStatus } />}
         <Searchbar handleSearchQuery={this.handleSearchQuery} />
         {this.state.isLoading && <Loader/>}
         <ImageGallery
