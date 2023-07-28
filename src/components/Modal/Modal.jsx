@@ -2,6 +2,17 @@ import { Component } from "react";
 import css from './Modal.module.css';
 
 export class Modal extends Component {
+    componentDidMount() {
+        document.addEventListener('keydown', this.handleEscKey);
+    } 
+
+    handleEscKey = (e) => {
+        if (e.key === 'Escape') {
+            this.props.closeModal(e);
+            return;
+        }
+    }
+
     render() {
         return (
             <div

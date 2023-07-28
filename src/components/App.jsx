@@ -27,11 +27,12 @@ export class App extends Component {
       searchQuery: searchText,
       isLoading: true,
       isFinish: true,
+      isFinded: true,
       collection: [],
     }));
     getSearchData(this.state.searchQuery, this.state.page)
       .then(res => res.json())
-      .then(res => {
+      .then(async res => {
         if (res.total === 0) {
           this.setState(({
             isLoading: false,
@@ -39,16 +40,17 @@ export class App extends Component {
           }));
           return res.total;
         }
-        this.setState(() => {
-          if (res.hits.length !== 12) {
-            this.setState(({isFinish: true}))
-          }
+        await this.setState(() => {
           return {
             collection: [...res.hits],
             isLoading: false,
             isFinish: false,
           }
         })
+
+        if (res.total < 12) {
+          this.setState(({isFinish: true}))
+        }
       })
   }
 
@@ -69,6 +71,7 @@ export class App extends Component {
         isLoadingMore: true,
       }
     });
+
     getSearchData(this.state.searchQuery, this.state.page)
       .then(res => res.json())
       .then(res => {
