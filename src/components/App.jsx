@@ -5,6 +5,7 @@ import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
+import { Loader } from './Loader/Loader';
 
 export class App extends Component {
   state = {
@@ -12,17 +13,31 @@ export class App extends Component {
     page: 1,
     collection: [],
     isLoading: false,
+    isLoadingMore: false,
     isLargeImage: false,
+    isFinish: true,
     largeImageUrl: '',
   }
 
   handleSearchQuery = async (searchText) => {
-    await this.setState(({ page: 1, searchQuery: searchText }));
+    await this.setState(({
+      page: 1,
+      searchQuery: searchText,
+      isLoading: true,
+      collection: [],
+    }));
     getSearchData(this.state.searchQuery, this.state.page)
       .then(res => res.json())
       .then(res => {
         this.setState(() => {
-          return {collection: [...res.hits]}
+          if (res.hits.length !== 12) {
+            this.setState(({isFinish: true}))
+          }
+          return {
+            collection: [...res.hits],
+            isLoading: false,
+            isFinish: false,
+          }
         })
       })
   }
@@ -39,13 +54,22 @@ export class App extends Component {
 
   loadMore = async () => {
     await this.setState((prevState) => {
-      return { page: prevState.page + 1 }
+      return {
+        page: prevState.page + 1,
+        isLoadingMore: true,
+      }
     });
     getSearchData(this.state.searchQuery, this.state.page)
       .then(res => res.json())
       .then(res => {
         this.setState((prevState) => {
-          return {collection: [...prevState.collection, ...res.hits]}
+          if (res.hits.length !== 12) {
+            this.setState(({isFinish: true}))
+          }
+          return {
+            collection: [...prevState.collection, ...res.hits],
+            isLoadingMore: false,
+          }
         })
       })
   }
@@ -54,12 +78,14 @@ export class App extends Component {
     return (
       <div className={css.app}>
         <Searchbar handleSearchQuery={this.handleSearchQuery} />
+        {this.state.isLoading && <Loader/>}
         <ImageGallery
           collection={this.state.collection}
           openLargeImage={this.openLargeImage}
         >
-          {this.state.collection.length > 0 && <Button loadMore={this.loadMore} />}          
+          {!this.state.isFinish && <Button loadMore={this.loadMore} />} 
         </ImageGallery>
+        {this.state.isLoadingMore && <Loader/>}
         {this.state.isLargeImage &&
           <Modal
             largeImageUrl={this.state.largeImageUrl}

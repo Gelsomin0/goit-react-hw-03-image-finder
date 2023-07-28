@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { Loader } from "components/Loader/Loader";
 import css from './Button.module.css';
 
 export class Button extends Component {
