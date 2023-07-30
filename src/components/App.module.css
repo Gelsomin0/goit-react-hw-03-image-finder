@@ -5,3 +5,8 @@
     padding-bottom: 24px;
     margin: 0 auto;
 }
+
+.loader {
+    display: block;
+    margin: 0 auto;
+}
