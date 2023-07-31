@@ -1,5 +1,6 @@
 import css from './ImageGallery.module.css';
 import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
+import PropTypes from 'prop-types';
 
 export const ImageGallery = ({collection, onOpenOverlay}) => {
     return (
@@ -14,4 +15,9 @@ export const ImageGallery = ({collection, onOpenOverlay}) => {
             })}
         </ul>
     );
+}
+
+ImageGallery.propTypes = {
+    collection: PropTypes.array.isRequired,
+    onOpenOverlay: PropTypes.func.isRequired,
 }

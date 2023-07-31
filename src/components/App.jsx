@@ -6,6 +6,7 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { FallingLinesComponent } from './FallingLinesComponent/FallingLinesComponent';
 import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
+import Notiflix from 'notiflix';
 
 export class App extends Component {
   state = {
@@ -21,6 +22,7 @@ export class App extends Component {
 
   onSubmit = (newQuery) => {
     if (!newQuery) {
+      Notiflix.Notify.failure('Please, enter some keyword');
       return;
     }
 
@@ -40,7 +42,8 @@ export class App extends Component {
     if (prevState.searchQuery !== this.state.searchQuery) {
       getSearchData(this.state.searchQuery, this.state.page)
         .then(res => res.json())
-        .then(({hits, total}) => {
+        .then(({ hits, total }) => {
+          Notiflix.Notify.success(`We found ${total} images for you.`);
           this.setState({ searchData: [...hits], isLoadedGallery: true });
 
           if (total > 12) this.setState((prevState) => {
@@ -62,7 +65,7 @@ export class App extends Component {
 
     getSearchData(this.state.searchQuery, this.state.page)
       .then(res => res.json())
-      .then(({ hits }) => {      
+      .then(({ hits }) => { 
         this.setState((prevState) => {
           return {
             searchData: [...prevState.searchData, ...hits],
@@ -72,7 +75,10 @@ export class App extends Component {
           }
         })
 
-        if (hits.length < 12) this.setState({ canLoadMore: false });
+        if (hits.length < 12) {
+          this.setState({ canLoadMore: false });  
+          Notiflix.Notify.info('The images are finished!');
+        } 
       })
   }
 

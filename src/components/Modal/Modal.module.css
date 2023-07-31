@@ -9,6 +9,7 @@
     align-items: center;
     background-color: rgba(0, 0, 0, 0.8);
     z-index: 1200;
+    cursor: pointer;
 }
 
 .modal {
@@ -23,4 +24,5 @@
     width: 90%;
     height: 90%;
     object-fit: cover;
+    cursor: default;
 }
