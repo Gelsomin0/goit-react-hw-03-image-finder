@@ -3,8 +3,9 @@ import css from './App.module.css';
 import { getSearchData } from 'tools/getSearchData';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
-import { FallingLines } from 'react-loader-spinner';
+import { FallingLinesComponent } from './FallingLinesComponent/FallingLinesComponent';
 import { Button } from './Button/Button';
+import { Modal } from './Modal/Modal';
 
 export class App extends Component {
   state = {
@@ -13,6 +14,9 @@ export class App extends Component {
     page: 1,
     isLoadedGallery: true,
     canLoadMore: false,
+    isloadingMore: false,
+    isModalOpen: false,
+    largeImageURL: '',
   }
 
   onSubmit = (newQuery) => {
@@ -24,7 +28,7 @@ export class App extends Component {
       searchQuery: newQuery,
       searchData: [],
       page: 1,
-      isLoadedGallery: false,      
+      isLoadedGallery: false,
     });
   }
 
@@ -50,43 +54,76 @@ export class App extends Component {
     }
   }
 
-  onLoadMore = () => {
+  onLoadMore = async () => {
+    await this.setState({
+      canLoadMore: false,
+      isloadingMore:true,
+    })
+
     getSearchData(this.state.searchQuery, this.state.page)
       .then(res => res.json())
-      .then(({ hits }) => {
-        if (hits.length < 12) this.setState({ canLoadMore: false });
-        
+      .then(({ hits }) => {      
         this.setState((prevState) => {
           return {
             searchData: [...prevState.searchData, ...hits],
             page: prevState.page + 1,
+            canLoadMore: true,
+            isloadingMore: false,
           }
         })
+
+        if (hits.length < 12) this.setState({ canLoadMore: false });
       })
+  }
+
+  onOpenOverlay = (imageURL) => {
+    this.setState({ 
+      isModalOpen: true,
+      largeImageURL: imageURL,
+    });
+  }
+
+  closeModalByClick = ({target}) => {
+    if (target.alt === undefined) this.setState({ isModalOpen: false });
+  }
+
+  closeModalByESC = () => {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') this.setState({ isModalOpen: false });
+    });
+  }
+
+  handleModalEventListener = () => {
+    this.closeModalByESC();
+    document.removeEventListener('keydown', this.closeModalByESC);
   }
   
   render() {
     return (
-      <div className={css.app}>
-        <Searchbar
-          onSubmit={this.onSubmit}
-        />
+      <>
+        {this.state.isModalOpen &&
+          <Modal
+            imageURL={this.state.largeImageURL}
+            closeModalByClick={this.closeModalByClick}
+            handleModalEventListener={this.handleModalEventListener}
+          />}
+        <div className={css.app}>
+          <Searchbar
+            onSubmit={this.onSubmit}
+          />
 
-        {!this.state.isLoadedGallery && 
-          <div className={css.loader}>
-            <FallingLines
-              color="#4fa94d"
-              width="100"
-              visible={true}
-              ariaLabel='falling-lines-loading'
+          {!this.state.isLoadedGallery && <FallingLinesComponent />}
+          {this.state.searchData.length > 0 &&
+            <ImageGallery
+              collection={this.state.searchData}
+              onOpenOverlay={this.onOpenOverlay}
             />
-          </div>          
-        }      
-
-        {this.state.searchData.length > 0 && <ImageGallery collection={this.state.searchData} />}
-        {this.state.canLoadMore && <Button onLoadMore={this.onLoadMore} />}
-
-      </div>
+          }
+          {this.state.canLoadMore && <Button onLoadMore={this.onLoadMore} />}
+          {this.state.isloadingMore && <FallingLinesComponent/>}
+        </div>
+          
+      </>
     );
   }
 };
