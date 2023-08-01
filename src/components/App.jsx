@@ -30,6 +30,7 @@ export class App extends Component {
       searchQuery: newQuery,
       searchData: [],
       page: 1,
+      canLoadMore: false,
       isLoadedGallery: false,
     });
   }
@@ -43,8 +44,14 @@ export class App extends Component {
       getSearchData(this.state.searchQuery, this.state.page)
         .then(res => res.json())
         .then(({ hits, total }) => {
-          Notiflix.Notify.success(`We found ${total} images for you.`);
+          if (!total) {
+            Notiflix.Notify.failure('This is no result by your keyword!');
+            this.setState({ isLoadedGallery: true });
+            return;
+          } 
+          
           this.setState({ searchData: [...hits], isLoadedGallery: true });
+          Notiflix.Notify.success(`We found ${total} images for you.`);
 
           if (total > 12) this.setState((prevState) => {
             return {
@@ -52,6 +59,7 @@ export class App extends Component {
               page: prevState.page + 1,
             }
           });
+          return;
         })  
       return;
     }
