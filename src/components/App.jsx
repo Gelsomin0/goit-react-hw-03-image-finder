@@ -31,6 +31,7 @@ export class App extends Component {
       searchData: [],
       page: 1,
       canLoadMore: false,
+      isLoadedGallery: true,
     });
   };
 
@@ -38,8 +39,6 @@ export class App extends Component {
     if (this.state.searchQuery === '') {
       return;
     };
-
-    if (prevState.page !== this.state.page) this.setState({ isloadingMore: true });
 
     if (
       prevState.searchQuery !== this.state.searchQuery
@@ -53,30 +52,25 @@ export class App extends Component {
             Notiflix.Notify.failure('This is no result by your keyword!');
             this.setState({ isLoadedGallery: true });
             return;
-          };
+          }
+          if (total > 0) this.setState({ canLoadMore: true });
+          if (hits.length !== 12) this.setState({ canLoadMore: false });
 
           if (this.state.searchData.length >= 12) {
             this.setState((prevState) => {
               return {
                 searchData: [...prevState.searchData, ...hits],
                 isLoadedGallery: true,
-                isloadingMore: false,
               };
             });
           } else {
             this.setState({
               searchData: [...hits],
               isLoadedGallery: true,
-              isloadingMore: false,
             });
             Notiflix.Notify.success(`We found ${total} images for you.`);
           };
-
-          if (total > 12) this.setState((prevState) => {
-            return {
-              canLoadMore: true,
-            };
-          });
+          this.setState({ isloadingMore: false });
           return;
         });
       return;
@@ -86,6 +80,7 @@ export class App extends Component {
   onLoadMore = () => {
     this.setState((prevState) => {
       return {
+        isloadingMore: true,
         canLoadMore: false,
         page: prevState.page + 1,
       };
@@ -138,7 +133,6 @@ export class App extends Component {
           {this.state.canLoadMore && <Button onLoadMore={this.onLoadMore} />}
           {this.state.isloadingMore && <FallingLinesComponent/>}
         </div>
-          
       </>
     );
   };
