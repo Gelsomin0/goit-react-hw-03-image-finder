@@ -8,7 +8,10 @@ export class Modal extends Component {
     }
     render() {
         return (
-            <div onClick={this.props.closeModalByClick} className={css.overlay}>
+            <div
+                onClick={this.props.closeModalByClick}
+                className={css.overlay}
+            >
                 <div className={css.modal}>
                     <img className={css.image} src={this.props.imageURL} alt="" />
                 </div>

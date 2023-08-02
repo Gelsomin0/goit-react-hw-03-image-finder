@@ -18,29 +18,32 @@ export class App extends Component {
     isloadingMore: false,
     isModalOpen: false,
     largeImageURL: '',
-  }
+  };
 
   onSubmit = (newQuery) => {
     if (!newQuery) {
       Notiflix.Notify.failure('Please, enter some keyword');
       return;
-    }
+    };
 
     this.setState({
       searchQuery: newQuery,
       searchData: [],
       page: 1,
       canLoadMore: false,
-      isLoadedGallery: false,
     });
-  }
+  };
 
   componentDidUpdate(_, prevState) {
     if (this.state.searchQuery === '') {
       return;
-    }
+    };
 
-    if (prevState.searchQuery !== this.state.searchQuery) {
+    if (
+      prevState.searchQuery !== this.state.searchQuery
+      || prevState.page !== this.state.page
+    ) {
+      this.setState({ isLoadedGallery: false });
       getSearchData(this.state.searchQuery, this.state.page)
         .then(res => res.json())
         .then(({ hits, total }) => {
@@ -48,69 +51,67 @@ export class App extends Component {
             Notiflix.Notify.failure('This is no result by your keyword!');
             this.setState({ isLoadedGallery: true });
             return;
-          } 
-          
-          this.setState({ searchData: [...hits], isLoadedGallery: true });
-          Notiflix.Notify.success(`We found ${total} images for you.`);
+          };
+
+          if (this.state.searchData.length >= 12) {
+            this.setState((prevState) => {
+              return {
+                searchData: [...prevState.searchData, ...hits],
+                isLoadedGallery: true,
+                isloadingMore: false,
+              };
+            });
+          } else {
+            this.setState({
+              searchData: [...hits],
+              isLoadedGallery: true,
+              isloadingMore: false,
+            });
+            Notiflix.Notify.success(`We found ${total} images for you.`);
+          };
 
           if (total > 12) this.setState((prevState) => {
             return {
               canLoadMore: true,
-              page: prevState.page + 1,
-            }
+            };
           });
           return;
-        })  
+        });
       return;
-    }
-  }
+    };
+  };
 
-  onLoadMore = async () => {
-    await this.setState({
-      canLoadMore: false,
-      isloadingMore:true,
-    })
-
-    getSearchData(this.state.searchQuery, this.state.page)
-      .then(res => res.json())
-      .then(({ hits }) => { 
-        this.setState((prevState) => {
-          return {
-            searchData: [...prevState.searchData, ...hits],
-            page: prevState.page + 1,
-            canLoadMore: true,
-            isloadingMore: false,
-          }
-        })
-
-        if (hits.length < 12) {
-          this.setState({ canLoadMore: false });  
-          Notiflix.Notify.info('The images are finished!');
-        } 
-      })
-  }
+  onLoadMore = () => {
+    this.setState((prevState) => {
+      return {
+        canLoadMore: false,
+        isloadingMore: true,
+        page: prevState.page + 1,
+      };
+    });
+  };
 
   onOpenOverlay = (imageURL) => {
-    this.setState({ 
+    this.setState({
       isModalOpen: true,
       largeImageURL: imageURL,
     });
-  }
+  };
 
-  closeModalByClick = ({target}) => {
-    if (target.alt === undefined) this.setState({ isModalOpen: false });
-  }
+  closeModalByClick = ({ target, currentTarget }) => {
+    if (target === currentTarget) this.setState({ isModalOpen: false });
+  };
 
   closeModalByESC = () => {
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') this.setState({ isModalOpen: false });
     });
-  }
+  };
 
   handleModalEventListener = () => {
     this.closeModalByESC();
     document.removeEventListener('keydown', this.closeModalByESC);
-  }
+  };
   
   render() {
     return (
@@ -139,5 +140,5 @@ export class App extends Component {
           
       </>
     );
-  }
+  };
 };
