@@ -39,6 +39,8 @@ export class App extends Component {
       return;
     };
 
+    if (prevState.page !== this.state.page) this.setState({ isloadingMore: true });
+
     if (
       prevState.searchQuery !== this.state.searchQuery
       || prevState.page !== this.state.page
@@ -85,7 +87,6 @@ export class App extends Component {
     this.setState((prevState) => {
       return {
         canLoadMore: false,
-        isloadingMore: true,
         page: prevState.page + 1,
       };
     });
